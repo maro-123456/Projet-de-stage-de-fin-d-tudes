@@ -2,21 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
-import { FileText, Search, Mail, Bot, TrendingUp, Star, ArrowRight, Zap } from 'lucide-react';
-
+import { FileText, Search, Mail, Bot, TrendingUp, ArrowRight, Zap, Upload, BookOpen } from 'lucide-react';
 const quickActions = [
-  { to: '/cv', icon: FileText, label: 'Créer / Modifier mon CV', desc: 'Construisez un CV optimisé ATS', color: '#c9a84c' },
-  { to: '/job-analyzer', icon: Search, label: 'Analyser une offre', desc: 'Comparez votre profil avec une offre', color: '#3498db' },
-  { to: '/cover-letter', icon: Mail, label: 'Lettre de motivation', desc: 'Générez une lettre personnalisée', color: '#27ae60' },
-  { to: '/assistant', icon: Bot, label: 'Assistant IA', desc: 'Conseils emploi personnalisés', color: '#9b59b6' },
+  { to: '/cv',           icon: FileText, label: 'Générer mon CV',       desc: 'CV optimisé pour le marché marocain', color: '#2563eb', bg: '#eff6ff' },
+  { to: '/cover-letter', icon: Mail,     label: 'Lettre de motivation', desc: 'Personnalisée pour chaque offre',     color: '#7c3aed', bg: '#f5f3ff' },
+  { to: '/job-analyzer', icon: Search,   label: "Offres d'emploi",      desc: 'Offres réelles du Maroc',            color: '#ea580c', bg: '#fff7ed' },
+  { to: '/assistant',    icon: Bot,      label: 'Simulation entretien', desc: "Entraînez-vous avec l'IA",           color: '#0891b2', bg: '#ecfeff' },
 ];
 
 const tips = [
-  "Ajoutez des mots-clés spécifiques au secteur dans votre CV pour passer les filtres ATS.",
-  "Mentionnez votre niveau de français et d'anglais clairement — très valorisé dans l'offshoring.",
+  "Ajoutez des résultats chiffrés dans vos expériences pour améliorer l'impact de votre CV.",
+  "Mentionnez votre niveau de français et d'anglais — très valorisé dans l'offshoring.",
   "Adaptez votre lettre de motivation à chaque entreprise marocaine.",
   "Listez vos compétences Excel, Word et outils métiers — très demandés au Maroc.",
-  "Précisez votre ville de résidence dans votre CV pour les employeurs locaux.",
 ];
 
 export default function Dashboard() {
@@ -33,90 +31,139 @@ export default function Dashboard() {
 
   return (
     <div>
-      {/* Header */}
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '1.9rem', fontWeight: 800 }}>
-          {greeting}, <span style={{ background: 'var(--gradient-gold)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>{user?.name?.split(' ')[0]}</span> 👋
-        </h1>
-        <p style={{ color: 'var(--text-secondary)', marginTop: '0.4rem' }}>Votre tableau de bord d'insertion professionnelle au Maroc</p>
+      {/* Hero banner */}
+      <div style={{
+        background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
+        borderRadius: 20,
+        padding: '2rem',
+        marginBottom: '1.5rem',
+        border: '1px solid #bfdbfe',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '1rem'
+      }}>
+        <div>
+          <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#111827' }}>
+            {greeting} {user?.name?.split(' ')[0]} 👋
+          </h1>
+          <p style={{ color: '#374151', marginTop: '0.3rem', fontWeight: 500 }}>
+            Prêt à booster votre carrière aujourd'hui ?
+          </p>
+          <p style={{ color: '#6b7280', fontSize: '0.85rem', marginTop: '0.2rem' }}>
+            CVBoost AI vous accompagne à chaque étape de votre recherche d'emploi.
+          </p>
+          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem', flexWrap: 'wrap' }}>
+            <Link to="/cv" className="btn btn-primary">
+              <FileText size={16} /> Créer / Améliorer mon CV
+            </Link>
+            <Link to="/job-analyzer" className="btn btn-secondary">
+              <Search size={16} /> Voir les offres
+            </Link>
+          </div>
+        </div>
+        <div style={{ fontSize: '4rem', opacity: 0.7 }}>🚀</div>
       </div>
 
-      {/* CV Score Banner */}
-      {cv && (
-        <div className="card" style={{ marginBottom: '1.5rem', background: 'linear-gradient(135deg, rgba(201,168,76,0.1), rgba(201,168,76,0.05))', borderColor: 'rgba(201,168,76,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-            <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'rgba(201,168,76,0.15)', border: '3px solid var(--accent-gold)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--accent-gold-light)', lineHeight: 1 }}>{cv.score || 0}</span>
-              <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)' }}>/ 100</span>
+      {/* Quick actions */}
+      <div className="grid-2" style={{ marginBottom: '1.5rem' }}>
+        {quickActions.map(({ to, icon: Icon, label, desc, color, bg }) => (
+          <Link key={to} to={to} style={{ textDecoration: 'none' }}>
+            <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '1rem', cursor: 'pointer' }}>
+              <div style={{ width: 48, height: 48, borderRadius: 14, background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Icon size={22} color={color} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 700, fontSize: '0.92rem', color: '#111827', marginBottom: '0.2rem' }}>{label}</div>
+                <div style={{ color: '#6b7280', fontSize: '0.8rem' }}>{desc}</div>
+              </div>
+              <ArrowRight size={16} color="#9ca3af" />
             </div>
-            <div>
-              <div style={{ fontWeight: 700, fontSize: '1rem' }}>Score de votre CV</div>
-              <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-                {cv.score >= 80 ? '🌟 Excellent CV !' : cv.score >= 60 ? '✅ Bon CV, améliorable' : cv.score > 0 ? '⚡ Besoin d\'améliorations' : 'Complétez votre CV pour obtenir un score'}
+          </Link>
+        ))}
+      </div>
+
+      <div className="grid-2" style={{ marginBottom: '1.5rem' }}>
+        {/* Score CV */}
+        <div className="card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <span style={{ fontWeight: 700 }}>Score CV</span>
+            <Link to="/cv" style={{ fontSize: '0.78rem', color: '#2563eb', textDecoration: 'none', fontWeight: 600 }}>
+              Améliorer →
+            </Link>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+            <div style={{ position: 'relative', width: 80, height: 80, flexShrink: 0 }}>
+              <svg width="80" height="80" viewBox="0 0 80 80">
+                <circle cx="40" cy="40" r="32" fill="none" stroke="#e5e7eb" strokeWidth="6" />
+                <circle
+                  cx="40" cy="40" r="32" fill="none" stroke="#2563eb" strokeWidth="6"
+                  strokeDasharray={`${2 * Math.PI * 32 * (cv?.score || 0) / 100} ${2 * Math.PI * 32}`}
+                  strokeLinecap="round"
+                  transform="rotate(-90 40 40)"
+                />
+              </svg>
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontWeight: 800, fontSize: '1.2rem', color: '#2563eb' }}>{cv?.score || 0}</span>
+                <span style={{ fontSize: '0.6rem', color: '#9ca3af' }}>/100</span>
               </div>
             </div>
+            <div>
+              <div style={{ fontWeight: 600, marginBottom: '0.25rem', color: '#111827' }}>
+                {cv?.score >= 80 ? '🌟 Excellent !' : cv?.score >= 60 ? '✅ Bon CV' : cv?.score > 0 ? '⚡ À améliorer' : 'Complétez votre CV'}
+              </div>
+              <div style={{ fontSize: '0.82rem', color: '#6b7280', lineHeight: 1.5 }}>
+                {cv?.feedback ? cv.feedback.substring(0, 80) + '...' : 'Analysez votre CV pour obtenir un score'}
+              </div>
+              <Link to="/cv" className="btn btn-primary btn-sm" style={{ marginTop: '0.75rem' }}>
+                <TrendingUp size={13} /> Analyser
+              </Link>
+            </div>
           </div>
-          <Link to="/cv" className="btn btn-primary">
-            <TrendingUp size={16} /> Améliorer mon CV <ArrowRight size={15} />
-          </Link>
         </div>
-      )}
 
-      {/* Quick Actions */}
-      <div style={{ marginBottom: '2rem' }}>
-        <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.75rem' }}>Actions rapides</h2>
-        <div className="grid-2">
-          {quickActions.map(({ to, icon: Icon, label, desc, color }) => (
-            <Link key={to} to={to} style={{ textDecoration: 'none' }}>
-              <div className="card" style={{ cursor: 'pointer', display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
-                <div style={{ width: 44, height: 44, borderRadius: 12, background: `${color}18`, border: `1px solid ${color}33`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Icon size={20} color={color} />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 700, fontSize: '0.95rem', marginBottom: '0.25rem' }}>{label}</div>
-                  <div style={{ color: 'var(--text-secondary)', fontSize: '0.82rem' }}>{desc}</div>
-                </div>
-                <ArrowRight size={16} color="var(--text-muted)" style={{ marginTop: 4, flexShrink: 0 }} />
+        {/* Conseil du jour */}
+        <div className="card">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+            <div style={{ width: 32, height: 32, background: '#fef3c7', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Zap size={16} color="#d97706" />
+            </div>
+            <span style={{ fontWeight: 700, fontSize: '0.92rem' }}>Conseil du jour</span>
+          </div>
+          <p style={{ color: '#6b7280', fontSize: '0.875rem', lineHeight: 1.6 }}>{tip}</p>
+          <div style={{ marginTop: '1rem', padding: '0.75rem', background: '#f0fdf4', borderRadius: 8, border: '1px solid #bbf7d0' }}>
+            <p style={{ fontSize: '0.78rem', color: '#15803d', fontWeight: 500 }}>
+              🇲🇦 Marché marocain — Secteurs qui recrutent : Offshoring, IT, Tourisme
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Actions rapides */}
+      <div className="card">
+        <div style={{ fontWeight: 700, marginBottom: '1rem', color: '#111827' }}>Actions rapides</div>
+        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+          {[
+            { to: '/cv',           icon: Upload,   label: 'Importer un CV',     desc: 'Upload PDF ou Word',        color: '#2563eb', bg: '#eff6ff' },
+            { to: '/job-analyzer', icon: Search,   label: 'Analyser une offre', desc: "Collez l'offre d'emploi",  color: '#7c3aed', bg: '#f5f3ff' },
+            { to: '/job-analyzer', icon: BookOpen, label: 'Voir les offres',    desc: 'Offres du Maroc',           color: '#ea580c', bg: '#fff7ed' },
+            { to: '/assistant',    icon: Bot,      label: 'Entretien IA',       desc: 'Démarrer une session',      color: '#0891b2', bg: '#ecfeff' },
+          ].map((a, i) => (
+            <Link key={i} to={a.to} style={{ textDecoration: 'none', flex: '1 1 140px' }}>
+              <div
+                style={{ background: a.bg, borderRadius: 12, padding: '1rem', border: `1px solid ${a.bg}`, textAlign: 'center', transition: 'transform 0.2s', cursor: 'pointer' }}
+                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+              >
+                <a.icon size={24} color={a.color} style={{ marginBottom: '0.5rem' }} />
+                <div style={{ fontWeight: 700, fontSize: '0.82rem', color: '#111827', marginBottom: '0.2rem' }}>{a.label}</div>
+                <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>{a.desc}</div>
               </div>
             </Link>
           ))}
         </div>
       </div>
-
-      <div className="grid-2">
-        {/* Tip of the day */}
-        <div className="card" style={{ background: 'linear-gradient(135deg, rgba(39,174,96,0.08), rgba(39,174,96,0.03))', borderColor: 'rgba(39,174,96,0.25)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-            <Zap size={16} color="#27ae60" />
-            <span style={{ fontWeight: 700, fontSize: '0.85rem', color: '#2ecc71' }}>Conseil du jour</span>
-          </div>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6 }}>{tip}</p>
-        </div>
-
-        {/* Moroccan market insight */}
-        <div className="card" style={{ background: 'linear-gradient(135deg, rgba(41,128,185,0.08), rgba(41,128,185,0.03))', borderColor: 'rgba(41,128,185,0.25)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-            <Star size={16} color="#3498db" />
-            <span style={{ fontWeight: 700, fontSize: '0.85rem', color: '#3498db' }}>Marché marocain 🇲🇦</span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            {[['Offshoring / BPO', '↑ Fort recrutement'], ['IT & Digital', '↑ Très dynamique'], ['Tourisme', '↑ En reprise'], ['Commerce', '→ Stable']].map(([sector, status]) => (
-              <div key={sector} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>{sector}</span>
-                <span style={{ fontSize: '0.75rem', color: status.includes('↑') ? '#2ecc71' : '#f39c12', fontWeight: 600 }}>{status}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Profile completion */}
-      {!cv?.personalInfo?.objective && (
-        <div className="alert alert-info" style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
-          <span>💡 Complétez votre CV pour obtenir votre score et des recommandations personnalisées !</span>
-          <Link to="/cv" className="btn btn-secondary btn-sm">Compléter mon CV</Link>
-        </div>
-      )}
     </div>
   );
 }
