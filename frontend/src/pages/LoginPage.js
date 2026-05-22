@@ -2,12 +2,19 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
-import { LogIn, Eye, EyeOff, Zap } from 'lucide-react';
+import { Eye, EyeOff, ArrowRight, Zap } from 'lucide-react';
+
+const slides = [
+  { title: "Optimisez votre", highlight: "CV avec l'IA", desc: "Obtenez un score détaillé et des recommandations personnalisées pour le marché marocain." },
+  { title: "Analysez chaque", highlight: "Offre d'emploi", desc: "Comparez votre profil avec les offres de Rekrute et MarocAnnonces en quelques secondes." },
+  { title: "Générez votre", highlight: "Lettre de motivation", desc: "Une lettre professionnelle en français marocain, adaptée à chaque poste visé." },
+];
 
 export default function LoginPage() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [slide, setSlide] = useState(0);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -19,67 +26,102 @@ export default function LoginPage() {
       toast.success('Bienvenue ! 🎉');
       navigate('/dashboard');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Erreur de connexion');
+      toast.error(err.response?.data?.message || 'Email ou mot de passe incorrect');
     } finally { setLoading(false); }
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', background: '#f4f6fb' }}>
-      {/* Left panel */}
-      <div style={{ flex: 1, background: 'var(--gradient-blue)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '3rem', color: '#fff' }}>
-        <div style={{ maxWidth: 380 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2.5rem' }}>
-            <div style={{ width: 44, height: 44, background: 'rgba(255,255,255,0.2)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Zap size={24} color="#fff" />
-            </div>
-            <span style={{ fontSize: '1.6rem', fontWeight: 800 }}>CVBoost AI</span>
+    <div style={{ minHeight: '100vh', display: 'flex', background: '#eef2ff', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+      <div style={{ width: '100%', maxWidth: 1000, display: 'flex', borderRadius: 24, overflow: 'hidden', boxShadow: '0 32px 80px rgba(37,99,235,0.15)', minHeight: 580 }}>
+
+        {/* ── Panneau gauche bleu ── */}
+        <div style={{ flex: 1, background: 'linear-gradient(145deg, #1e3a8a 0%, #1d4ed8 50%, #2563eb 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '3rem 2.5rem', position: 'relative', overflow: 'hidden' }}>
+          {/* Cercles décoratifs */}
+          <div style={{ position: 'absolute', width: 300, height: 300, borderRadius: '50%', background: 'rgba(255,255,255,0.05)', top: -60, right: -60, pointerEvents: 'none' }}></div>
+          <div style={{ position: 'absolute', width: 200, height: 200, borderRadius: '50%', background: 'rgba(255,255,255,0.05)', bottom: -40, left: -40, pointerEvents: 'none' }}></div>
+
+          {/* Logo */}
+          <div style={{ width: 76, height: 76, borderRadius: 20, background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2.5rem', backdropFilter: 'blur(8px)' }}>
+            <Zap size={34} color="#ffffff" />
           </div>
-          <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem', lineHeight: 1.2 }}>Boostez votre carrière avec l'IA 🚀</h2>
-          <p style={{ opacity: 0.85, lineHeight: 1.7, fontSize: '0.95rem', marginBottom: '2rem' }}>
-            CVBoost AI vous accompagne dans votre recherche d'emploi au Maroc : CV optimisé, analyse d'offres, lettres de motivation et bien plus.
-          </p>
-          {[
-            '✅ CV optimisé pour les ATS marocains',
-            '✅ Analyse de compatibilité avec les offres',
-            '✅ Génération de lettres de motivation',
-            '✅ Assistant IA spécialisé emploi Maroc',
-          ].map((f, i) => (
-            <div key={i} style={{ fontSize: '0.875rem', opacity: 0.9, marginBottom: '0.5rem' }}>{f}</div>
-          ))}
+
+          {/* Slide */}
+          <div style={{ textAlign: 'center', maxWidth: 320, marginBottom: '2.5rem' }}>
+            <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#ffffff', lineHeight: 1.35, marginBottom: '1rem' }}>
+              {slides[slide].title}{' '}
+              <span style={{ color: '#93c5fd' }}>{slides[slide].highlight}</span>
+            </h2>
+            <p style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.65)', lineHeight: 1.7 }}>
+              {slides[slide].desc}
+            </p>
+          </div>
+
+          {/* Dots */}
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            {slides.map((_, i) => (
+              <div key={i} onClick={() => setSlide(i)} style={{ width: i === slide ? 24 : 8, height: 8, borderRadius: 4, background: i === slide ? '#ffffff' : 'rgba(255,255,255,0.3)', cursor: 'pointer', transition: 'all 0.3s' }}></div>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Right panel */}
-      <div style={{ width: 480, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3rem', background: '#fff' }}>
-        <div style={{ width: '100%', maxWidth: 380 }}>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.4rem', color: 'var(--text-primary)' }}>Connexion</h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '2rem' }}>Accédez à votre espace personnel</p>
+        {/* ── Panneau droit blanc ── */}
+        <div style={{ width: 460, background: '#ffffff', display: 'flex', flexDirection: 'column', padding: '2rem 3rem' }}>
+          {/* Top */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '2rem' }}>
+            <span style={{ fontSize: '0.82rem', color: '#9ca3af' }}>
+              Pas de compte ?{' '}
+              <Link to="/register" style={{ color: '#2563eb', textDecoration: 'none', fontWeight: 700 }}>S'inscrire</Link>
+            </span>
+          </div>
 
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label className="form-label">Adresse email</label>
-              <input type="email" className="form-input" placeholder="vous@exemple.com" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Mot de passe</label>
-              <div style={{ position: 'relative' }}>
-                <input type={showPwd ? 'text' : 'password'} className="form-input" placeholder="••••••••" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} required style={{ paddingRight: '3rem' }} />
-                <button type="button" onClick={() => setShowPwd(!showPwd)} style={{ position: 'absolute', right: '0.9rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
-                  {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
+          {/* Form */}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#111827', marginBottom: '0.4rem' }}>Bienvenue ! 👋</h1>
+            <p style={{ fontSize: '0.83rem', color: '#9ca3af', marginBottom: '2rem' }}>Entrez vos identifiants pour accéder à votre compte</p>
+
+            <form onSubmit={handleSubmit}>
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#374151', marginBottom: '0.4rem' }}>Email</label>
+                <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="johndoe@mail.com" required
+                  style={{ width: '100%', padding: '0.75rem 1rem', border: '1.5px solid #e5e7eb', borderRadius: 10, fontSize: '0.88rem', fontFamily: 'Inter, sans-serif', outline: 'none', boxSizing: 'border-box', color: '#111827', transition: 'border 0.2s' }}
+                  onFocus={e => e.target.style.borderColor = '#2563eb'}
+                  onBlur={e => e.target.style.borderColor = '#e5e7eb'}
+                />
               </div>
-            </div>
-            <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={loading} style={{ marginTop: '0.5rem' }}>
-              {loading ? <><span className="spinner" style={{ width: 17, height: 17 }}></span> Connexion...</> : <><LogIn size={17} /> Se connecter</>}
-            </button>
-          </form>
 
-          <div className="divider"></div>
-          <p style={{ textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-            Pas encore de compte ?{' '}
-            <Link to="/register" style={{ color: 'var(--accent-blue)', textDecoration: 'none', fontWeight: 600 }}>S'inscrire gratuitement</Link>
-          </p>
-          <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: '1.5rem' }}>🇲🇦 Conçu pour le marché marocain</p>
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#374151', marginBottom: '0.4rem' }}>Mot de passe</label>
+                <div style={{ position: 'relative' }}>
+                  <input type={showPwd ? 'text' : 'password'} value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} placeholder="minimum 6 caractères" required
+                    style={{ width: '100%', padding: '0.75rem 3rem 0.75rem 1rem', border: '1.5px solid #e5e7eb', borderRadius: 10, fontSize: '0.88rem', fontFamily: 'Inter, sans-serif', outline: 'none', boxSizing: 'border-box', color: '#111827', transition: 'border 0.2s' }}
+                    onFocus={e => e.target.style.borderColor = '#2563eb'}
+                    onBlur={e => e.target.style.borderColor = '#e5e7eb'}
+                  />
+                  <button type="button" onClick={() => setShowPwd(!showPwd)} style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af' }}>
+                    {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+              </div>
+
+              <button type="submit" disabled={loading}
+                style={{ width: '100%', padding: '0.85rem', background: loading ? '#93c5fd' : 'linear-gradient(135deg, #2563eb, #3b82f6)', border: 'none', borderRadius: 10, color: '#fff', fontSize: '0.95rem', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', fontFamily: 'Inter, sans-serif', boxShadow: '0 4px 16px rgba(37,99,235,0.35)', transition: 'all 0.2s' }}>
+                {loading ? 'Connexion...' : <><span>Se connecter</span><ArrowRight size={18} /></>}
+              </button>
+            </form>
+
+            <div style={{ textAlign: 'center', marginTop: '1.25rem' }}>
+              <span style={{ fontSize: '0.8rem', color: '#9ca3af', textDecoration: 'underline', cursor: 'pointer' }}>Mot de passe oublié ?</span>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: '#d1d5db', marginTop: '1.5rem' }}>
+            <span>© 2025 CVBoost AI</span>
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <span style={{ cursor: 'pointer' }}>Confidentialité</span>
+              <span style={{ cursor: 'pointer' }}>Support</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
