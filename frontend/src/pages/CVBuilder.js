@@ -9,45 +9,20 @@ const LANG_LEVELS = ['Débutant', 'Intermédiaire', 'Avancé', 'Courant', 'Langu
 
 const THEMES = [
   { id: 'classic',   name: 'Classique',  sidebar: '#1a3a5c', accent: '#1a3a5c',  sidebarText: '#ffffff', light: '#e8f0f7' },
-  { id: 'gold',      name: 'Prestige',   sidebar: '#1a1a2e', accent: '#8B6914',  sidebarText: '#c9a84c', light: '#fdf6e3' },
   { id: 'modern',    name: 'Moderne',    sidebar: '#16a085', accent: '#16a085',  sidebarText: '#ffffff', light: '#e8f8f5' },
+  { id: 'gold',      name: 'Prestige',   sidebar: '#1a1a2e', accent: '#8B6914',  sidebarText: '#c9a84c', light: '#fdf6e3' },
   { id: 'executive', name: 'Exécutif',   sidebar: '#2c3e50', accent: '#2c3e50',  sidebarText: '#ecf0f1', light: '#ecf0f1' },
 ];
 
 const defaultCV = {
   personalInfo: { name: '', email: '', phone: '', city: '', objective: '' },
-  education: [{ degree: '', school: '', year: '', description: '' }],
-  experience: [{ title: '', company: '', duration: '', description: '' }],
+  education:    [{ degree: '', school: '', year: '', description: '' }],
+  experience:   [{ title: '', company: '', duration: '', description: '' }],
   skills: [],
-  languages: [{ language: 'Français', level: 'Courant' }, { language: 'Arabe', level: 'Langue maternelle' }]
+  languages:    [{ language: 'Français', level: 'Courant' }, { language: 'Arabe', level: 'Langue maternelle' }]
 };
 
-// ─── CV Preview HTML ─────────────────────────────────────────────────────────
-function SideSection({ title, color }) {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
-      <div style={{ width: 18, height: 2, background: color, opacity: 0.5, borderRadius: 1 }}></div>
-      <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1.2, color, opacity: 0.85 }}>{title}</div>
-    </div>
-  );
-}
-function MainSection({ title, accent }) {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 2 }}>
-      <div style={{ fontSize: 14, fontWeight: 800, color: accent, letterSpacing: -0.3 }}>{title}</div>
-      <div style={{ flex: 1, height: 2, background: `${accent}22`, borderRadius: 1 }}></div>
-    </div>
-  );
-}
-function ContactItem({ icon, text, color }) {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-      <span style={{ fontSize: 11 }}>{icon}</span>
-      <span style={{ fontSize: 10.5, color, opacity: 0.85, wordBreak: 'break-all' }}>{text}</span>
-    </div>
-  );
-}
-
+// ─── CV Preview ───────────────────────────────────────────────────────────────
 function CVPreviewRender({ cv, theme }) {
   const t = THEMES.find(x => x.id === theme) || THEMES[0];
   const info = cv?.personalInfo || {};
@@ -57,45 +32,99 @@ function CVPreviewRender({ cv, theme }) {
   const education = cv?.education || [];
   const experience = cv?.experience || [];
 
+  const langWidth = (level) => {
+    const map = { 'Langue maternelle': '100%', 'Courant': '85%', 'Avancé': '70%', 'Intermédiaire': '50%', 'Débutant': '30%' };
+    return map[level] || '50%';
+  };
+
   return (
     <div id="cv-preview-render" style={{
-      width: 794, minHeight: 1123, fontFamily: "'Segoe UI', Arial, sans-serif",
-      fontSize: 13, color: '#222', background: '#fff',
-      display: 'flex', boxSizing: 'border-box', overflow: 'hidden'
+      width: 794,
+      minHeight: 1123,
+      fontFamily: 'Arial, sans-serif',
+      fontSize: 13,
+      color: '#222',
+      background: '#fff',
+      display: 'flex',
+      flexDirection: 'row',
+      boxSizing: 'border-box',
+      overflow: 'hidden',
+      lineHeight: 1.4
     }}>
-      {/* Colonne gauche */}
-      <div style={{ width: 240, background: t.sidebar, color: t.sidebarText, padding: '36px 22px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 22 }}>
-        <div style={{ textAlign: 'center' }}>
+      {/* ── Colonne gauche ── */}
+      <div style={{
+        width: 230,
+        minWidth: 230,
+        maxWidth: 230,
+        background: t.sidebar,
+        padding: '32px 20px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 0,
+        boxSizing: 'border-box',
+        overflow: 'hidden'
+      }}>
+        {/* Avatar */}
+        <div style={{ textAlign: 'center', marginBottom: 20 }}>
           <div style={{
-            width: 86, height: 86, borderRadius: '50%', margin: '0 auto 14px',
-            background: `${t.accent}33`, border: `3px solid ${t.sidebarText}44`,
+            width: 76, height: 76, borderRadius: '50%',
+            background: `rgba(255,255,255,0.15)`,
+            border: `3px solid rgba(255,255,255,0.3)`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 30, fontWeight: 700, color: t.sidebarText
+            fontSize: 28, fontWeight: 700, color: t.sidebarText,
+            margin: '0 auto 12px'
           }}>
-            {name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
+            {name.charAt(0).toUpperCase()}
           </div>
-          <div style={{ fontSize: 17, fontWeight: 700, lineHeight: 1.2, color: t.sidebarText }}>{name}</div>
-          {info.objective && <div style={{ fontSize: 10, opacity: 0.7, lineHeight: 1.4, marginTop: 8 }}>{info.objective.substring(0, 130)}{info.objective.length > 130 ? '...' : ''}</div>}
+          <div style={{ fontSize: 16, fontWeight: 700, color: t.sidebarText, wordBreak: 'break-word', marginBottom: 6 }}>{name}</div>
+          {info.objective && (
+            <div style={{ fontSize: 10, color: t.sidebarText, opacity: 0.75, lineHeight: 1.5, wordBreak: 'break-word' }}>
+              {info.objective.substring(0, 120)}{info.objective.length > 120 ? '...' : ''}
+            </div>
+          )}
         </div>
 
-        <div>
-          <SideSection title="Contact" color={t.sidebarText} />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 7, marginTop: 8 }}>
-            {info.phone && <ContactItem icon="📞" text={info.phone} color={t.sidebarText} />}
-            {info.email && <ContactItem icon="✉️" text={info.email} color={t.sidebarText} />}
-            {info.city  && <ContactItem icon="📍" text={info.city}  color={t.sidebarText} />}
+        {/* Contact */}
+        <div style={{ marginBottom: 18 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+            <div style={{ width: 16, height: 2, background: t.sidebarText, opacity: 0.5 }}></div>
+            <div style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1.2, color: t.sidebarText, opacity: 0.85 }}>CONTACT</div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+            {info.phone && (
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+                <span style={{ fontSize: 10, flexShrink: 0 }}>📞</span>
+                <span style={{ fontSize: 10, color: t.sidebarText, opacity: 0.85, wordBreak: 'break-all' }}>{info.phone}</span>
+              </div>
+            )}
+            {info.email && (
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+                <span style={{ fontSize: 10, flexShrink: 0 }}>✉️</span>
+                <span style={{ fontSize: 10, color: t.sidebarText, opacity: 0.85, wordBreak: 'break-all' }}>{info.email}</span>
+              </div>
+            )}
+            {info.city && (
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+                <span style={{ fontSize: 10, flexShrink: 0 }}>📍</span>
+                <span style={{ fontSize: 10, color: t.sidebarText, opacity: 0.85, wordBreak: 'break-all' }}>{info.city}</span>
+              </div>
+            )}
           </div>
         </div>
 
+        {/* Compétences */}
         {skills.length > 0 && (
-          <div>
-            <SideSection title="Compétences" color={t.sidebarText} />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 8 }}>
+          <div style={{ marginBottom: 18 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+              <div style={{ width: 16, height: 2, background: t.sidebarText, opacity: 0.5 }}></div>
+              <div style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1.2, color: t.sidebarText, opacity: 0.85 }}>COMPÉTENCES</div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
               {skills.map((skill, i) => (
                 <div key={i}>
-                  <div style={{ fontSize: 10.5, color: t.sidebarText, opacity: 0.9, marginBottom: 3 }}>{skill}</div>
-                  <div style={{ height: 4, background: `${t.sidebarText}25`, borderRadius: 2 }}>
-                    <div style={{ height: 4, width: `${70 + (i % 3) * 10}%`, background: t.sidebarText, borderRadius: 2, opacity: 0.65 }}></div>
+                  <div style={{ fontSize: 10, color: t.sidebarText, opacity: 0.9, marginBottom: 3, wordBreak: 'break-word' }}>{skill}</div>
+                  <div style={{ height: 3, background: `rgba(255,255,255,0.2)`, borderRadius: 2 }}>
+                    <div style={{ height: 3, width: `${65 + (i % 4) * 8}%`, background: t.sidebarText, opacity: 0.6, borderRadius: 2 }}></div>
                   </div>
                 </div>
               ))}
@@ -103,71 +132,127 @@ function CVPreviewRender({ cv, theme }) {
           </div>
         )}
 
+        {/* Langues */}
         {languages.length > 0 && (
-          <div>
-            <SideSection title="Langues" color={t.sidebarText} />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 8 }}>
-              {languages.map((lang, i) => {
-                const w = lang.level === 'Langue maternelle' ? '100%' : lang.level === 'Courant' ? '85%' : lang.level === 'Avancé' ? '70%' : lang.level === 'Intermédiaire' ? '50%' : '30%';
-                return (
-                  <div key={i}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-                      <span style={{ fontSize: 10.5, color: t.sidebarText, opacity: 0.9 }}>{lang.language}</span>
-                      <span style={{ fontSize: 9, color: t.sidebarText, opacity: 0.6 }}>{lang.level}</span>
-                    </div>
-                    <div style={{ height: 4, background: `${t.sidebarText}25`, borderRadius: 2 }}>
-                      <div style={{ height: 4, width: w, background: t.sidebarText, borderRadius: 2, opacity: 0.65 }}></div>
-                    </div>
+          <div style={{ marginBottom: 18 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+              <div style={{ width: 16, height: 2, background: t.sidebarText, opacity: 0.5 }}></div>
+              <div style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1.2, color: t.sidebarText, opacity: 0.85 }}>LANGUES</div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+              {languages.map((lang, i) => (
+                <div key={i}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
+                    <span style={{ fontSize: 10, color: t.sidebarText, opacity: 0.9 }}>{lang.language}</span>
+                    <span style={{ fontSize: 8.5, color: t.sidebarText, opacity: 0.65 }}>{lang.level}</span>
                   </div>
-                );
-              })}
+                  <div style={{ height: 3, background: `rgba(255,255,255,0.2)`, borderRadius: 2 }}>
+                    <div style={{ height: 3, width: langWidth(lang.level), background: t.sidebarText, opacity: 0.6, borderRadius: 2 }}></div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
+
+        {/* Footer */}
+        <div style={{ marginTop: 'auto', paddingTop: 16 }}>
+          <div style={{ fontSize: 8, color: t.sidebarText, opacity: 0.4, textAlign: 'center' }}>
+            CVBoost AI 🇲🇦 — {new Date().toLocaleDateString('fr-MA', { month: 'long', year: 'numeric' })}
+          </div>
+        </div>
       </div>
 
-      {/* Colonne droite */}
-      <div style={{ flex: 1, padding: '36px 30px', display: 'flex', flexDirection: 'column', gap: 22 }}>
+      {/* ── Colonne droite ── */}
+      <div style={{
+        flex: 1,
+        padding: '32px 28px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 22,
+        boxSizing: 'border-box',
+        overflow: 'hidden',
+        minWidth: 0
+      }}>
+
+        {/* En-tête nom + titre */}
+        <div style={{ borderBottom: `3px solid ${t.accent}`, paddingBottom: 12 }}>
+          <div style={{ fontSize: 22, fontWeight: 800, color: '#1a1a1a', marginBottom: 2 }}>{name}</div>
+          {experience[0]?.title && (
+            <div style={{ fontSize: 13, color: t.accent, fontWeight: 600 }}>{experience[0].title}</div>
+          )}
+        </div>
+
+        {/* Objectif / Profil */}
+        {info.objective && (
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+              <div style={{ fontSize: 13, fontWeight: 800, color: t.accent }}>Profil</div>
+              <div style={{ flex: 1, height: 2, background: `${t.accent}22` }}></div>
+            </div>
+            <div style={{ fontSize: 11, color: '#555', lineHeight: 1.65, wordBreak: 'break-word' }}>{info.objective}</div>
+          </div>
+        )}
+
+        {/* Expériences */}
         {experience.length > 0 && experience[0].title && (
           <div>
-            <MainSection title="Expériences Professionnelles" accent={t.accent} />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+              <div style={{ fontSize: 13, fontWeight: 800, color: t.accent }}>Expériences Professionnelles</div>
+              <div style={{ flex: 1, height: 2, background: `${t.accent}22` }}></div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               {experience.map((exp, i) => exp.title ? (
-                <div key={i} style={{ borderLeft: `3px solid ${t.accent}`, paddingLeft: 14 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 2 }}>
-                    <div style={{ fontWeight: 700, fontSize: 13, color: '#1a1a1a' }}>{exp.title}</div>
-                    {exp.duration && <div style={{ fontSize: 10, color: '#888', whiteSpace: 'nowrap', marginLeft: 8 }}>{exp.duration}</div>}
+                <div key={i} style={{ borderLeft: `3px solid ${t.accent}`, paddingLeft: 12 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 2, gap: 8 }}>
+                    <div style={{ fontWeight: 700, fontSize: 12.5, color: '#1a1a1a', flex: 1, wordBreak: 'break-word' }}>{exp.title}</div>
+                    {exp.duration && (
+                      <div style={{ fontSize: 9.5, color: '#888', whiteSpace: 'nowrap', flexShrink: 0 }}>{exp.duration}</div>
+                    )}
                   </div>
-                  {exp.company && <div style={{ fontSize: 11, color: t.accent, fontWeight: 600, marginBottom: 4 }}>{exp.company}</div>}
-                  {exp.description && <div style={{ fontSize: 10.5, color: '#555', lineHeight: 1.55 }}>{exp.description}</div>}
+                  {exp.company && (
+                    <div style={{ fontSize: 11, color: t.accent, fontWeight: 600, marginBottom: 4, wordBreak: 'break-word' }}>{exp.company}</div>
+                  )}
+                  {exp.description && (
+                    <div style={{ fontSize: 10.5, color: '#555', lineHeight: 1.6, wordBreak: 'break-word' }}>
+                      {exp.description.split('\n').map((line, j) => (
+                        <div key={j} style={{ marginBottom: 2 }}>• {line}</div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ) : null)}
             </div>
           </div>
         )}
 
+        {/* Formation */}
         {education.length > 0 && education[0].degree && (
           <div>
-            <MainSection title="Formation" accent={t.accent} />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+              <div style={{ fontSize: 13, fontWeight: 800, color: t.accent }}>Formation</div>
+              <div style={{ flex: 1, height: 2, background: `${t.accent}22` }}></div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {education.map((edu, i) => edu.degree ? (
-                <div key={i} style={{ borderLeft: `3px solid ${t.accent}55`, paddingLeft: 14 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 2 }}>
-                    <div style={{ fontWeight: 700, fontSize: 12.5, color: '#1a1a1a' }}>{edu.degree}</div>
-                    {edu.year && <div style={{ fontSize: 10, color: '#888', whiteSpace: 'nowrap', marginLeft: 8 }}>{edu.year}</div>}
+                <div key={i} style={{ borderLeft: `3px solid ${t.accent}55`, paddingLeft: 12 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 2, gap: 8 }}>
+                    <div style={{ fontWeight: 700, fontSize: 12, color: '#1a1a1a', flex: 1, wordBreak: 'break-word' }}>{edu.degree}</div>
+                    {edu.year && (
+                      <div style={{ fontSize: 9.5, color: '#888', whiteSpace: 'nowrap', flexShrink: 0 }}>{edu.year}</div>
+                    )}
                   </div>
-                  {edu.school && <div style={{ fontSize: 11, color: t.accent, fontWeight: 600, marginBottom: 3 }}>{edu.school}</div>}
-                  {edu.description && <div style={{ fontSize: 10.5, color: '#666', lineHeight: 1.5 }}>{edu.description}</div>}
+                  {edu.school && (
+                    <div style={{ fontSize: 11, color: t.accent, fontWeight: 600, marginBottom: 3, wordBreak: 'break-word' }}>{edu.school}</div>
+                  )}
+                  {edu.description && (
+                    <div style={{ fontSize: 10.5, color: '#666', lineHeight: 1.5, wordBreak: 'break-word' }}>{edu.description}</div>
+                  )}
                 </div>
               ) : null)}
             </div>
           </div>
         )}
-
-        <div style={{ marginTop: 'auto', paddingTop: 14, borderTop: `1px solid ${t.light}`, display: 'flex', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: 9, color: '#bbb' }}>CV généré via Tawdhif | توظيف — Maroc 🇲🇦</span>
-          <span style={{ fontSize: 9, color: '#bbb' }}>{new Date().toLocaleDateString('fr-MA', { month: 'long', year: 'numeric' })}</span>
-        </div>
       </div>
     </div>
   );
@@ -182,99 +267,88 @@ function DownloadModal({ cv, userName, onClose }) {
     const content = document.getElementById('cv-preview-render');
     if (!content) return;
     const win = window.open('', '_blank');
-    win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>CV - ${cv?.personalInfo?.name || userName}</title><style>body{margin:0;padding:0;}@media print{body{margin:0;}}</style></head><body>${content.outerHTML}<script>window.onload=()=>{window.print();window.close();}<\/script></body></html>`);
+    win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>CV</title><style>body{margin:0;padding:0;}@page{margin:0;size:A4;}</style></head><body>${content.outerHTML}<script>window.onload=()=>{window.print();window.close();}<\/script></body></html>`);
     win.document.close();
   };
 
   const downloadPDF = async () => {
     setDownloading(true);
     try {
-      // Charge html2canvas et jsPDF via CDN
-      const scriptH = document.createElement('script');
-      scriptH.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-      document.head.appendChild(scriptH);
-      await new Promise((res, rej) => { scriptH.onload = res; scriptH.onerror = rej; });
-
-      const scriptJ = document.createElement('script');
-      scriptJ.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-      document.head.appendChild(scriptJ);
-      await new Promise((res, rej) => { scriptJ.onload = res; scriptJ.onerror = rej; });
-
+      if (!window.html2canvas) {
+        const s1 = document.createElement('script');
+        s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+        document.head.appendChild(s1);
+        await new Promise((res, rej) => { s1.onload = res; s1.onerror = rej; });
+      }
+      if (!window.jspdf) {
+        const s2 = document.createElement('script');
+        s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+        document.head.appendChild(s2);
+        await new Promise((res, rej) => { s2.onload = res; s2.onerror = rej; });
+      }
       const element = document.getElementById('cv-preview-render');
-      const canvas = await window.html2canvas(element, { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' });
-
+      const canvas = await window.html2canvas(element, { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff', windowWidth: 794 });
       const imgData = canvas.toDataURL('image/jpeg', 0.95);
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [794, 1123] });
       pdf.addImage(imgData, 'JPEG', 0, 0, 794, 1123);
-      const name = (cv?.personalInfo?.name || userName || 'CV').replace(/\s+/g, '_');
-      pdf.save(`CV_${name}_Tawdhif.pdf`);
+      const nom = (cv?.personalInfo?.name || userName || 'CV').replace(/\s+/g, '_');
+      pdf.save(`CV_${nom}_CVBoostAI.pdf`);
       toast.success('CV téléchargé ! 🎉');
     } catch (err) {
-      console.error('Erreur PDF:', err);
-      toast.info('Ouverture en mode impression...');
+      console.error(err);
+      toast.info('Ouverture impression...');
       printCV();
-    } finally {
-      setDownloading(false);
-    }
+    } finally { setDownloading(false); }
   };
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', backdropFilter: 'blur(6px)' }}>
-      <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: 20, width: '100%', maxWidth: 1000, maxHeight: '93vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', backdropFilter: 'blur(4px)' }}>
+      <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: 20, width: '100%', maxWidth: 1050, maxHeight: '94vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         {/* Header */}
-        <div style={{ padding: '1.1rem 1.5rem', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h2 style={{ fontWeight: 800, fontSize: '1.1rem' }}>📄 Télécharger mon CV</h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: 2 }}>Choisissez un thème et exportez votre CV en PDF</p>
+            <div style={{ fontWeight: 800, fontSize: '1.05rem', color: 'var(--text-primary)' }}>📄 Télécharger mon CV</div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: 2 }}>Choisissez un thème et exportez en PDF</div>
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><X size={22} /></button>
         </div>
 
         <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
           {/* Panneau gauche */}
-          <div style={{ width: 210, borderRight: '1px solid var(--border)', padding: '1.1rem', display: 'flex', flexDirection: 'column', gap: '1rem', flexShrink: 0 }}>
+          <div style={{ width: 200, borderRight: '1px solid var(--border)', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', flexShrink: 0 }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.75rem' }}>
-                <Palette size={13} color="var(--accent-gold)" />
-                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Choisir un thème</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.6rem' }}>
+                <Palette size={13} color="var(--accent-blue)" />
+                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Thème</span>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                 {THEMES.map(theme => (
                   <button key={theme.id} onClick={() => setSelectedTheme(theme.id)} style={{
-                    display: 'flex', alignItems: 'center', gap: '0.65rem',
-                    padding: '0.55rem 0.85rem', borderRadius: 9, border: 'none', cursor: 'pointer',
-                    background: selectedTheme === theme.id ? 'rgba(201,168,76,0.12)' : 'rgba(255,255,255,0.03)',
-                    outline: selectedTheme === theme.id ? '1.5px solid rgba(201,168,76,0.5)' : '1.5px solid transparent',
-                    fontFamily: 'var(--font-main)', transition: 'all 0.18s', textAlign: 'left', width: '100%'
+                    display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.5rem 0.75rem',
+                    borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'var(--font-main)',
+                    transition: 'all 0.15s', textAlign: 'left', width: '100%',
+                    background: selectedTheme === theme.id ? 'var(--sidebar-active)' : 'transparent',
+                    outline: selectedTheme === theme.id ? '1.5px solid var(--accent-blue)' : '1.5px solid transparent',
                   }}>
-                    <div style={{ width: 22, height: 22, borderRadius: 6, background: theme.sidebar, flexShrink: 0, border: '2px solid rgba(255,255,255,0.1)' }}></div>
-                    <span style={{ fontSize: '0.85rem', fontWeight: 600, color: selectedTheme === theme.id ? 'var(--accent-gold-light)' : 'var(--text-secondary)' }}>{theme.name}</span>
-                    {selectedTheme === theme.id && <span style={{ marginLeft: 'auto', fontSize: 12 }}>✓</span>}
+                    <div style={{ width: 20, height: 20, borderRadius: 5, background: theme.sidebar, flexShrink: 0 }}></div>
+                    <span style={{ fontSize: '0.83rem', fontWeight: 600, color: selectedTheme === theme.id ? 'var(--accent-blue)' : 'var(--text-secondary)' }}>{theme.name}</span>
+                    {selectedTheme === theme.id && <span style={{ marginLeft: 'auto', color: 'var(--accent-blue)', fontSize: 12 }}>✓</span>}
                   </button>
                 ))}
               </div>
             </div>
-
-            <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
-              <button onClick={downloadPDF} className="btn btn-primary btn-full" disabled={downloading} style={{ fontSize: '0.85rem' }}>
-                {downloading ? <><span className="spinner" style={{ width: 15, height: 15 }}></span> Génération PDF...</> : <><Download size={15} /> Télécharger PDF</>}
+            <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <button onClick={downloadPDF} className="btn btn-primary btn-full" disabled={downloading} style={{ fontSize: '0.83rem' }}>
+                {downloading ? <><span className="spinner" style={{ width: 14, height: 14 }}></span> PDF...</> : <><Download size={14} /> Télécharger PDF</>}
               </button>
-              <button onClick={printCV} className="btn btn-secondary btn-full" style={{ fontSize: '0.8rem' }}>
-                🖨️ Imprimer
-              </button>
-            </div>
-
-            <div style={{ padding: '0.75rem', background: 'rgba(201,168,76,0.06)', borderRadius: 10, border: '1px solid rgba(201,168,76,0.15)' }}>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
-                💡 Le PDF est optimisé pour le format A4 — prêt à envoyer aux recruteurs.
-              </p>
+              <button onClick={printCV} className="btn btn-secondary btn-full" style={{ fontSize: '0.8rem' }}>🖨️ Imprimer</button>
             </div>
           </div>
 
-          {/* Prévisualisation */}
+          {/* Preview */}
           <div style={{ flex: 1, overflow: 'auto', background: '#d1d1d1', padding: '1.5rem', display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
-            <div style={{ transform: 'scale(0.68)', transformOrigin: 'top center', marginBottom: -370, boxShadow: '0 12px 50px rgba(0,0,0,0.4)', borderRadius: 4, overflow: 'hidden' }}>
+            <div style={{ transform: 'scale(0.68)', transformOrigin: 'top center', marginBottom: -370, boxShadow: '0 12px 40px rgba(0,0,0,0.3)', borderRadius: 4, overflow: 'hidden' }}>
               <CVPreviewRender cv={cv} theme={selectedTheme} />
             </div>
           </div>
@@ -305,31 +379,25 @@ export default function CVBuilder() {
 
   const saveCV = async () => {
     setSaving(true);
-    try {
-      await axios.post('/api/cv', cv);
-      toast.success('CV sauvegardé ✅');
-    } catch { toast.error('Erreur lors de la sauvegarde'); }
+    try { await axios.post('/api/cv', cv); toast.success('CV sauvegardé ✅'); }
+    catch { toast.error('Erreur sauvegarde'); }
     finally { setSaving(false); }
   };
 
   const scoreCV = async () => {
     await saveCV();
     setScoring(true);
-    try {
-      const r = await axios.post('/api/ai/score-cv');
-      setScore(r.data);
-      toast.success(`Score obtenu : ${r.data.score}/100 🎯`);
-    } catch { toast.error("Erreur lors de l'analyse IA"); }
+    try { const r = await axios.post('/api/ai/score-cv'); setScore(r.data); toast.success(`Score : ${r.data.score}/100 🎯`); }
+    catch { toast.error("Erreur analyse IA"); }
     finally { setScoring(false); }
   };
 
   const optimizeSection = async (section, content) => {
-    const target = cv.personalInfo.objective || 'poste général';
     setOptimizing(section);
     try {
-      const r = await axios.post('/api/ai/optimize-cv', { section, content, targetJob: target, tone: 'professionnel et dynamique' });
+      const r = await axios.post('/api/ai/optimize-cv', { section, content, targetJob: cv.personalInfo.objective || 'poste général', tone: 'professionnel' });
       if (section === 'objective') setCv(c => ({ ...c, personalInfo: { ...c.personalInfo, objective: r.data.optimized } }));
-      toast.success('Section optimisée par l\'IA ✨');
+      toast.success('Optimisé par IA ✨');
     } catch { toast.error('Erreur IA'); }
     finally { setOptimizing(''); }
   };
@@ -340,24 +408,24 @@ export default function CVBuilder() {
   };
   const removeSkill = (s) => setCv(c => ({ ...c, skills: c.skills.filter(x => x !== s) }));
 
-  const addEdu = () => setCv(c => ({ ...c, education: [...c.education, { degree: '', school: '', year: '', description: '' }] }));
-  const removeEdu = (i) => setCv(c => ({ ...c, education: c.education.filter((_, idx) => idx !== i) }));
-  const updateEdu = (i, field, val) => setCv(c => ({ ...c, education: c.education.map((e, idx) => idx === i ? { ...e, [field]: val } : e) }));
+  const addEdu    = () => setCv(c => ({ ...c, education:  [...c.education,  { degree: '', school: '', year: '', description: '' }] }));
+  const removeEdu = (i) => setCv(c => ({ ...c, education:  c.education.filter((_, idx) => idx !== i) }));
+  const updateEdu = (i, f, v) => setCv(c => ({ ...c, education: c.education.map((e, idx) => idx === i ? { ...e, [f]: v } : e) }));
 
-  const addExp = () => setCv(c => ({ ...c, experience: [...c.experience, { title: '', company: '', duration: '', description: '' }] }));
+  const addExp    = () => setCv(c => ({ ...c, experience: [...c.experience, { title: '', company: '', duration: '', description: '' }] }));
   const removeExp = (i) => setCv(c => ({ ...c, experience: c.experience.filter((_, idx) => idx !== i) }));
-  const updateExp = (i, field, val) => setCv(c => ({ ...c, experience: c.experience.map((e, idx) => idx === i ? { ...e, [field]: val } : e) }));
+  const updateExp = (i, f, v) => setCv(c => ({ ...c, experience: c.experience.map((e, idx) => idx === i ? { ...e, [f]: v } : e) }));
 
-  const addLang = () => setCv(c => ({ ...c, languages: [...c.languages, { language: '', level: 'Intermédiaire' }] }));
+  const addLang    = () => setCv(c => ({ ...c, languages: [...c.languages, { language: '', level: 'Intermédiaire' }] }));
   const removeLang = (i) => setCv(c => ({ ...c, languages: c.languages.filter((_, idx) => idx !== i) }));
-  const updateLang = (i, field, val) => setCv(c => ({ ...c, languages: c.languages.map((l, idx) => idx === i ? { ...l, [field]: val } : l) }));
+  const updateLang = (i, f, v) => setCv(c => ({ ...c, languages: c.languages.map((l, idx) => idx === i ? { ...l, [f]: v } : l) }));
 
   const sections = [
-    { id: 'personal',    label: '👤 Informations personnelles' },
-    { id: 'education',   label: '🎓 Formation' },
-    { id: 'experience',  label: '💼 Expériences' },
-    { id: 'skills',      label: '⚡ Compétences' },
-    { id: 'languages',   label: '🌍 Langues' },
+    { id: 'personal',   label: '👤 Informations personnelles' },
+    { id: 'education',  label: '🎓 Formation' },
+    { id: 'experience', label: '💼 Expériences' },
+    { id: 'skills',     label: '⚡ Compétences' },
+    { id: 'languages',  label: '🌍 Langues' },
   ];
 
   return (
@@ -372,11 +440,11 @@ export default function CVBuilder() {
           <button onClick={saveCV} className="btn btn-secondary" disabled={saving}>
             {saving ? <><span className="spinner" style={{ width: 15, height: 15 }}></span> Sauvegarde...</> : <><Save size={15} /> Sauvegarder</>}
           </button>
-          <button onClick={() => { saveCV(); setShowDownload(true); }} className="btn btn-secondary" style={{ borderColor: 'rgba(201,168,76,0.5)', color: 'var(--accent-gold-light)' }}>
+          <button onClick={() => { saveCV(); setShowDownload(true); }} className="btn btn-secondary" style={{ borderColor: 'var(--accent-blue)', color: 'var(--accent-blue)' }}>
             <Download size={15} /> Télécharger CV
           </button>
           <button onClick={scoreCV} className="btn btn-primary" disabled={scoring}>
-            {scoring ? <><span className="spinner" style={{ width: 15, height: 15 }}></span> Analyse IA...</> : <><Star size={15} /> Analyser mon CV</>}
+            {scoring ? <><span className="spinner" style={{ width: 15, height: 15 }}></span> Analyse...</> : <><Star size={15} /> Analyser</>}
           </button>
         </div>
       </div>
@@ -393,13 +461,15 @@ export default function CVBuilder() {
 
               {activeSection === sec.id && (
                 <div style={{ marginTop: '1.25rem' }}>
+
+                  {/* Personal */}
                   {sec.id === 'personal' && (
                     <div>
                       <div className="grid-2" style={{ gap: '1rem' }}>
                         <div className="form-group"><label className="form-label">Nom complet</label><input className="form-input" value={cv.personalInfo.name} onChange={e => setCv(c => ({ ...c, personalInfo: { ...c.personalInfo, name: e.target.value } }))} placeholder="Prénom Nom" /></div>
                         <div className="form-group"><label className="form-label">Email</label><input className="form-input" type="email" value={cv.personalInfo.email} onChange={e => setCv(c => ({ ...c, personalInfo: { ...c.personalInfo, email: e.target.value } }))} placeholder="email@exemple.com" /></div>
                         <div className="form-group"><label className="form-label">Téléphone</label><input className="form-input" value={cv.personalInfo.phone} onChange={e => setCv(c => ({ ...c, personalInfo: { ...c.personalInfo, phone: e.target.value } }))} placeholder="+212 6XX XXX XXX" /></div>
-                        <div className="form-group"><label className="form-label">Ville</label><input className="form-input" value={cv.personalInfo.city} onChange={e => setCv(c => ({ ...c, personalInfo: { ...c.personalInfo, city: e.target.value } }))} placeholder="Casablanca, Agadir..." /></div>
+                        <div className="form-group"><label className="form-label">Ville</label><input className="form-input" value={cv.personalInfo.city} onChange={e => setCv(c => ({ ...c, personalInfo: { ...c.personalInfo, city: e.target.value } }))} placeholder="Agadir, Casablanca..." /></div>
                       </div>
                       <div className="form-group">
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
@@ -408,11 +478,12 @@ export default function CVBuilder() {
                             {optimizing === 'objective' ? <span className="spinner" style={{ width: 12, height: 12 }}></span> : <Zap size={12} />} IA
                           </button>
                         </div>
-                        <textarea className="form-textarea" value={cv.personalInfo.objective} onChange={e => setCv(c => ({ ...c, personalInfo: { ...c.personalInfo, objective: e.target.value } }))} placeholder="Ex: Chercheur d'emploi dynamique avec 3 ans d'expérience..." rows={4} />
+                        <textarea className="form-textarea" value={cv.personalInfo.objective} onChange={e => setCv(c => ({ ...c, personalInfo: { ...c.personalInfo, objective: e.target.value } }))} placeholder="Décrivez votre profil en 2-3 phrases..." rows={4} />
                       </div>
                     </div>
                   )}
 
+                  {/* Education */}
                   {sec.id === 'education' && (
                     <div>
                       {cv.education.map((edu, i) => (
@@ -421,10 +492,10 @@ export default function CVBuilder() {
                             <button className="btn btn-danger btn-sm" onClick={() => removeEdu(i)}><Trash2 size={14} /></button>
                           </div>
                           <div className="grid-2" style={{ gap: '0.75rem' }}>
-                            <div className="form-group"><label className="form-label">Diplôme</label><input className="form-input" value={edu.degree} onChange={e => updateEdu(i, 'degree', e.target.value)} placeholder="Licence, Master, BTS..." /></div>
-                            <div className="form-group"><label className="form-label">École / Université</label><input className="form-input" value={edu.school} onChange={e => updateEdu(i, 'school', e.target.value)} placeholder="ENCG, FSJES..." /></div>
-                            <div className="form-group"><label className="form-label">Année</label><input className="form-input" value={edu.year} onChange={e => updateEdu(i, 'year', e.target.value)} placeholder="2020 - 2023" /></div>
-                            <div className="form-group"><label className="form-label">Description</label><input className="form-input" value={edu.description} onChange={e => updateEdu(i, 'description', e.target.value)} placeholder="Spécialité, mention..." /></div>
+                            <div className="form-group"><label className="form-label">Diplôme</label><input className="form-input" value={edu.degree} onChange={e => updateEdu(i, 'degree', e.target.value)} placeholder="Licence, Master, DUT..." /></div>
+                            <div className="form-group"><label className="form-label">École</label><input className="form-input" value={edu.school} onChange={e => updateEdu(i, 'school', e.target.value)} placeholder="EST Agadir, ENCG..." /></div>
+                            <div className="form-group"><label className="form-label">Année</label><input className="form-input" value={edu.year} onChange={e => updateEdu(i, 'year', e.target.value)} placeholder="2022 - 2025" /></div>
+                            <div className="form-group"><label className="form-label">Spécialité</label><input className="form-input" value={edu.description} onChange={e => updateEdu(i, 'description', e.target.value)} placeholder="Génie Informatique..." /></div>
                           </div>
                         </div>
                       ))}
@@ -432,6 +503,7 @@ export default function CVBuilder() {
                     </div>
                   )}
 
+                  {/* Experience */}
                   {sec.id === 'experience' && (
                     <div>
                       {cv.experience.map((exp, i) => (
@@ -440,13 +512,13 @@ export default function CVBuilder() {
                             <button className="btn btn-danger btn-sm" onClick={() => removeExp(i)}><Trash2 size={14} /></button>
                           </div>
                           <div className="grid-2" style={{ gap: '0.75rem' }}>
-                            <div className="form-group"><label className="form-label">Poste</label><input className="form-input" value={exp.title} onChange={e => updateExp(i, 'title', e.target.value)} placeholder="Chargé de clientèle..." /></div>
+                            <div className="form-group"><label className="form-label">Poste</label><input className="form-input" value={exp.title} onChange={e => updateExp(i, 'title', e.target.value)} placeholder="Développeur Web, Stagiaire..." /></div>
                             <div className="form-group"><label className="form-label">Entreprise</label><input className="form-input" value={exp.company} onChange={e => updateExp(i, 'company', e.target.value)} placeholder="Nom de l'entreprise" /></div>
-                            <div className="form-group"><label className="form-label">Durée</label><input className="form-input" value={exp.duration} onChange={e => updateExp(i, 'duration', e.target.value)} placeholder="Jan 2022 - Déc 2023" /></div>
+                            <div className="form-group" style={{ gridColumn: '1/-1' }}><label className="form-label">Durée</label><input className="form-input" value={exp.duration} onChange={e => updateExp(i, 'duration', e.target.value)} placeholder="Jan 2024 - Juin 2024" /></div>
                           </div>
                           <div className="form-group">
-                            <label className="form-label">Description des tâches</label>
-                            <textarea className="form-textarea" value={exp.description} onChange={e => updateExp(i, 'description', e.target.value)} placeholder="Décrivez vos responsabilités et réalisations..." rows={3} />
+                            <label className="form-label">Description (une tâche par ligne)</label>
+                            <textarea className="form-textarea" value={exp.description} onChange={e => updateExp(i, 'description', e.target.value)} placeholder="Développement de fonctionnalités, Correction de bugs, Collaboration en équipe..." rows={4} />
                           </div>
                         </div>
                       ))}
@@ -454,6 +526,7 @@ export default function CVBuilder() {
                     </div>
                   )}
 
+                  {/* Skills */}
                   {sec.id === 'skills' && (
                     <div>
                       <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
@@ -464,16 +537,17 @@ export default function CVBuilder() {
                         {cv.skills.map(s => <div key={s} className="tag">{s} <span className="tag-remove" onClick={() => removeSkill(s)}>×</span></div>)}
                       </div>
                       <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
-                        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>Suggestions populaires au Maroc :</p>
+                        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>Suggestions :</p>
                         <div className="tags-container">
                           {SKILL_SUGGESTIONS.filter(s => !cv.skills.includes(s)).slice(0, 12).map(s => (
-                            <div key={s} className="tag" style={{ cursor: 'pointer', background: 'rgba(255,255,255,0.04)', color: 'var(--text-secondary)', borderColor: 'var(--border)' }} onClick={() => addSkill(s)}>+ {s}</div>
+                            <div key={s} className="tag" style={{ cursor: 'pointer', opacity: 0.7 }} onClick={() => addSkill(s)}>+ {s}</div>
                           ))}
                         </div>
                       </div>
                     </div>
                   )}
 
+                  {/* Languages */}
                   {sec.id === 'languages' && (
                     <div>
                       {cv.languages.map((lang, i) => (
@@ -497,9 +571,9 @@ export default function CVBuilder() {
         {/* Score Panel */}
         <div style={{ position: 'sticky', top: '2rem' }}>
           {score ? (
-            <div className="card" style={{ background: 'linear-gradient(135deg, rgba(201,168,76,0.08), rgba(201,168,76,0.02))' }}>
+            <div className="card">
               <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-                <div style={{ fontSize: '3.5rem', fontWeight: 800, background: 'var(--gradient-gold)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', lineHeight: 1 }}>{score.score}</div>
+                <div style={{ fontSize: '3.5rem', fontWeight: 800, color: 'var(--accent-blue)', lineHeight: 1 }}>{score.score}</div>
                 <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.25rem' }}>Score global / 100</div>
               </div>
               {score.readability !== undefined && (
@@ -515,27 +589,26 @@ export default function CVBuilder() {
                   ))}
                 </div>
               )}
-              <div style={{ background: 'rgba(0,0,0,0.2)', borderRadius: 10, padding: '1rem', marginBottom: '1rem' }}>
+              <div style={{ background: 'var(--bg-primary)', borderRadius: 10, padding: '1rem', marginBottom: '1rem' }}>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>{score.feedback}</p>
               </div>
               {score.tips?.length > 0 && (
-                <div>
+                <div style={{ marginBottom: '1rem' }}>
                   <p style={{ fontWeight: 700, fontSize: '0.85rem', marginBottom: '0.6rem' }}>💡 Conseils :</p>
                   <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                     {score.tips.map((t, i) => <li key={i} style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', paddingLeft: '1rem', position: 'relative' }}><span style={{ position: 'absolute', left: 0 }}>→</span>{t}</li>)}
                   </ul>
                 </div>
               )}
-              {/* Bouton télécharger aussi dans le panneau score */}
-              <button onClick={() => setShowDownload(true)} className="btn btn-secondary btn-full" style={{ marginTop: '1rem', borderColor: 'rgba(201,168,76,0.4)', color: 'var(--accent-gold-light)' }}>
+              <button onClick={() => setShowDownload(true)} className="btn btn-primary btn-full">
                 <Download size={15} /> Télécharger ce CV
               </button>
             </div>
           ) : (
             <div className="card" style={{ textAlign: 'center', padding: '2.5rem 1.5rem' }}>
-              <Star size={40} color="var(--accent-gold)" style={{ opacity: 0.5, marginBottom: '1rem' }} />
+              <Star size={40} color="var(--accent-blue)" style={{ opacity: 0.4, marginBottom: '1rem' }} />
               <h3 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Analysez votre CV</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1.5rem' }}>Obtenez un score et des recommandations personnalisées par l'IA</p>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1.5rem' }}>Obtenez un score et des recommandations IA</p>
               <button onClick={scoreCV} className="btn btn-primary btn-full" disabled={scoring}>
                 {scoring ? <><span className="spinner" style={{ width: 16, height: 16 }}></span> Analyse...</> : <><Star size={16} /> Analyser maintenant</>}
               </button>
@@ -544,7 +617,6 @@ export default function CVBuilder() {
         </div>
       </div>
 
-      {/* Modal téléchargement */}
       {showDownload && <DownloadModal cv={cv} userName={user?.name} onClose={() => setShowDownload(false)} />}
     </div>
   );
